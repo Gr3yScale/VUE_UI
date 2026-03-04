@@ -9,9 +9,11 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "typecheck": "vue-tsc --noEmit"
+    "typecheck": "vue-tsc --noEmit",
+    "server": "node server/index.mjs"
   },
   "dependencies": {
+    "marked": "^9.1.6",
     "vue": "^3.4.0"
   },
   "devDependencies": {

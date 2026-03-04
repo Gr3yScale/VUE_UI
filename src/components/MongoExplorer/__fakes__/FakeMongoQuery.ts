@@ -14,7 +14,7 @@ function initialPagination(): PaginationState {
 
 /** Test fake that implements the full `UseMongoQueryReturn` contract. */
 export class FakeMongoQuery implements UseMongoQueryReturn {
-  endpointUrl = ref('')
+  collection = ref('')
   editors = {
     filter: ref<JsonEditorState>(emptyEditor()),
     sort: ref<JsonEditorState>(emptyEditor()),
@@ -25,10 +25,10 @@ export class FakeMongoQuery implements UseMongoQueryReturn {
   isLoading = ref(false)
   fetchError = ref<string | null>(null)
   pagination = ref<PaginationState>(initialPagination()) as Readonly<Ref<PaginationState>>
-  canQuery = computed(() => this.endpointUrl.value.length > 0)
+  canQuery = computed(() => this.collection.value.length > 0)
   pageSummary = computed(() => `Page 1 | Showing 1–100 of ${this.totalMatches.value} matches`)
 
-  setEndpointUrl = vi.fn((url: string) => { this.endpointUrl.value = url })
+  setCollection = vi.fn((name: string) => { this.collection.value = name })
   updateEditor = vi.fn((field: keyof QueryEditorFields, raw: string) => {
     this.editors[field].value = { raw, isValid: true, error: null }
   })

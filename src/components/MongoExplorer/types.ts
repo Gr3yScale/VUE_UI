@@ -8,6 +8,8 @@ export type MongoDocument = Record<string, unknown>
  * The request body sent to the user-configured API endpoint.
  */
 export interface QueryRequest {
+  /** The MongoDB collection name to query. */
+  collection: string
   filter: MongoDocument
   sort: MongoDocument
   projection: MongoDocument
@@ -15,6 +17,28 @@ export interface QueryRequest {
   offset: string | null
   /** Fixed page size. */
   limit: number
+}
+
+/**
+ * A pre-built sample query shown in the SampleQueryPicker.
+ */
+export interface SampleQuery {
+  id: string
+  name: string
+  /** Markdown content rendered in the SampleQueryPicker detail pane. */
+  description: string
+  collection: string
+  filter: MongoDocument
+  sort: MongoDocument
+  projection: MongoDocument
+}
+
+/**
+ * Response from the `GET /metadata` endpoint.
+ */
+export interface MetadataResponse {
+  collections: string[]
+  sampleQueries: SampleQuery[]
 }
 
 /**

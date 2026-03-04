@@ -22,15 +22,15 @@ describe('useMongoQuery', () => {
   beforeEach(() => {
     vi.mocked(fetch).mockReset()
     query = useMongoQuery()
-    query.setEndpointUrl('https://api.example.com/query')
+    query.setCollection('users')
   })
 
-  it('canQuery is false when endpoint URL is empty', () => {
-    query.setEndpointUrl('')
+  it('canQuery is false when collection is empty', () => {
+    query.setCollection('')
     expect(query.canQuery.value).toBe(false)
   })
 
-  it('canQuery is true when endpoint is set and all editors are valid JSON', () => {
+  it('canQuery is true when collection is set and all editors are valid JSON', () => {
     expect(query.canQuery.value).toBe(true)
   })
 
@@ -57,10 +57,11 @@ describe('useMongoQuery', () => {
 
     await query.runQuery()
 
-    expect(fetch).toHaveBeenCalledWith('https://api.example.com/query', {
+    expect(fetch).toHaveBeenCalledWith('http://localhost:3001/query', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        collection: 'users',
         filter: { status: 'active' },
         sort: {},
         projection: {},

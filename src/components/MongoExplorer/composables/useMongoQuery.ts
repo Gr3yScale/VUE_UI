@@ -1,24 +1,20 @@
 import { ref, computed } from 'vue'
 import type { Ref, ComputedRef } from 'vue'
-import type {
-  MongoDocument,
-  QueryResponse,
-  JsonEditorState,
-  QueryEditorFields,
-  PaginationState,
-} from '../types'
+import type { MongoDocument, JsonEditorState, QueryEditorFields, PaginationState } from '../types'
 import { usePagination, PAGE_SIZE } from './usePagination'
+import { fetchQuery } from '../api'
 
 /**
  * Manages the full lifecycle of a MongoExplorer session:
- * endpoint configuration, query editing, data fetching, and pagination.
+ * collection selection, query editing, data fetching, and pagination.
  *
  * All state is reactive. Components bind directly to exposed refs.
  */
 export interface UseMongoQueryReturn {
-  endpointUrl: Ref<string>
-  /** Updates the endpoint URL and resets results and pagination. */
-  setEndpointUrl(url: string): void
+  /** The currently selected MongoDB collection name. Empty string when none selected. */
+  collection: Ref<string>
+  /** Sets the active collection, clearing results and resetting pagination. */
+  setCollection(name: string): void
 
   editors: {
     filter: Ref<JsonEditorState>
@@ -33,7 +29,7 @@ export interface UseMongoQueryReturn {
   /** Resets all three editors to `{}` and clears pagination. */
   resetEditors(): void
 
-  /** True when endpoint is non-empty and all editors contain valid JSON. */
+  /** True when a collection is selected and all editors contain valid JSON. */
   canQuery: ComputedRef<boolean>
   /** Executes a fresh query (page 1), resetting pagination first. */
   runQuery(): Promise<void>
@@ -67,18 +63,6 @@ function validateJson(raw: string): JsonEditorState {
   }
 }
 
-function isQueryResponse(val: unknown): val is QueryResponse {
-  return (
-    typeof val === 'object' &&
-    val !== null &&
-    'data' in val &&
-    Array.isArray((val as QueryResponse).data) &&
-    'finalOffset' in val &&
-    'totalMatches' in val &&
-    typeof (val as QueryResponse).totalMatches === 'number'
-  )
-}
-
 function emptyEditorState(): JsonEditorState {
   return { raw: '{}', isValid: true, error: null }
 }
@@ -87,7 +71,7 @@ function emptyEditorState(): JsonEditorState {
 export function useMongoQuery(): UseMongoQueryReturn {
   const paging = usePagination()
 
-  const endpointUrl = ref('')
+  const collection = ref('')
   const editors = {
     filter: ref<JsonEditorState>(emptyEditorState()),
     sort: ref<JsonEditorState>(emptyEditorState()),
@@ -101,7 +85,7 @@ export function useMongoQuery(): UseMongoQueryReturn {
 
   const canQuery = computed(
     () =>
-      endpointUrl.value.trim().length > 0 &&
+      collection.value.trim().length > 0 &&
       editors.filter.value.isValid &&
       editors.sort.value.isValid &&
       editors.projection.value.isValid,
@@ -109,8 +93,8 @@ export function useMongoQuery(): UseMongoQueryReturn {
 
   const pageSummary = computed(() => paging.pageSummary(totalMatches.value))
 
-  function setEndpointUrl(url: string): void {
-    endpointUrl.value = url
+  function setCollection(name: string): void {
+    collection.value = name
     results.value = []
     totalMatches.value = 0
     fetchError.value = null
@@ -137,32 +121,14 @@ export function useMongoQuery(): UseMongoQueryReturn {
     results.value = []
 
     try {
-      const body = {
+      const data = await fetchQuery({
+        collection: collection.value,
         filter: JSON.parse(editors.filter.value.raw) as MongoDocument,
         sort: JSON.parse(editors.sort.value.raw) as MongoDocument,
         projection: JSON.parse(editors.projection.value.raw) as MongoDocument,
         offset,
         limit: PAGE_SIZE,
-      }
-
-      const response = await fetch(endpointUrl.value, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
       })
-
-      if (!response.ok) {
-        const text = await response.text()
-        fetchError.value = `HTTP ${response.status}: ${text}`
-        return
-      }
-
-      const data: unknown = await response.json()
-
-      if (!isQueryResponse(data)) {
-        fetchError.value = 'Unexpected response format from server'
-        return
-      }
 
       results.value = data.data
       totalMatches.value = data.totalMatches
@@ -194,8 +160,8 @@ export function useMongoQuery(): UseMongoQueryReturn {
   }
 
   return {
-    endpointUrl,
-    setEndpointUrl,
+    collection,
+    setCollection,
     editors,
     updateEditor,
     resetEditors,
