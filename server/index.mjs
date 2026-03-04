@@ -3,6 +3,7 @@ import { COLLECTION_META } from './data/collections.mjs'
 import { sampleQueries } from './data/sampleQueries.mjs'
 import { SQL_SOURCE_META } from './data/sqlSources.mjs'
 import { sqlSampleQueries } from './data/sqlSampleQueries.mjs'
+import { API_SOURCES, buildMockResponse } from './data/apiSources.mjs'
 
 const PORT = 3001
 
@@ -115,6 +116,39 @@ const server = http.createServer(async (req, res) => {
     const nextOffset = nextPage < totalPages ? btoa(String(nextPage)) : null
 
     json(res, 200, { data: { columns: meta.columns, rows }, offset: nextOffset })
+    return
+  }
+
+  if (req.method === 'GET' && req.url === '/api-explorer/metadata') {
+    json(res, 200, { sources: API_SOURCES })
+    return
+  }
+
+  if (req.method === 'POST' && req.url === '/api-explorer/send') {
+    let body
+    try {
+      body = await readBody(req)
+    } catch {
+      json(res, 400, { error: 'Invalid JSON body' })
+      return
+    }
+
+    const { endpointId, body: rawBody, contentType } = body
+
+    // Find endpoint across all sources
+    const endpoint = API_SOURCES.flatMap(s => s.endpoints).find(e => e.id === endpointId)
+    if (!endpoint) {
+      json(res, 400, { error: `Unknown endpoint: ${endpointId}` })
+      return
+    }
+
+    let parsedBody = rawBody
+    if (contentType === 'application/json' && typeof rawBody === 'string') {
+      try { parsedBody = JSON.parse(rawBody) } catch { parsedBody = {} }
+    }
+
+    const mockResponse = buildMockResponse(endpointId, parsedBody)
+    json(res, 200, mockResponse)
     return
   }
 
