@@ -152,6 +152,73 @@ const server = http.createServer(async (req, res) => {
     return
   }
 
+  // MQ config
+  if (req.method === 'GET' && req.url === '/mq/config') {
+    json(res, 200, {
+      mqNames: ['ORDERS.IN', 'PAYMENTS.IN', 'NOTIFICATIONS.OUT', 'AUDIT.LOG', 'DEAD.LETTER', 'RESTRICTED.QUEUE'],
+      count: 6,
+    })
+    return
+  }
+
+  // MQ custom send
+  if (req.method === 'POST' && req.url.startsWith('/mq/send_custom')) {
+    let body
+    try {
+      body = await readBody(req)
+    } catch {
+      json(res, 400, { error: 'Invalid JSON body' })
+      return
+    }
+
+    const urlObj = new URL(req.url, 'http://localhost')
+    const delimiter = urlObj.searchParams.get('delimiter')
+
+    json(res, 200, {
+      status: 'ok',
+      messageId: `MSG-${Math.random().toString(36).slice(2, 10).toUpperCase()}`,
+      destination: `${body.host}:${body.port}/${body.queueName}`,
+      queueManager: body.queueManager,
+      channel: body.channel,
+      bytesSent: Buffer.byteLength(body.message ?? '', 'utf8'),
+      delimiter: delimiter ?? null,
+      timestamp: new Date().toISOString(),
+    })
+    return
+  }
+
+  // MQ named send — RESTRICTED.QUEUE returns 403
+  const namedSendMatch = req.method === 'POST' && req.url.match(/^\/mq\/send\/([^?]+)/)
+  if (namedSendMatch) {
+    const mqName = decodeURIComponent(namedSendMatch[1])
+
+    if (mqName === 'RESTRICTED.QUEUE') {
+      json(res, 403, { error: 'Access denied: you do not have permission to write to RESTRICTED.QUEUE' })
+      return
+    }
+
+    let body
+    try {
+      body = await readBody(req)
+    } catch {
+      json(res, 400, { error: 'Invalid JSON body' })
+      return
+    }
+
+    const urlObj = new URL(req.url, 'http://localhost')
+    const delimiter = urlObj.searchParams.get('delimiter')
+
+    json(res, 200, {
+      status: 'ok',
+      messageId: `MSG-${Math.random().toString(36).slice(2, 10).toUpperCase()}`,
+      queue: mqName,
+      bytesSent: Buffer.byteLength(body.message ?? '', 'utf8'),
+      delimiter: delimiter ?? null,
+      timestamp: new Date().toISOString(),
+    })
+    return
+  }
+
   json(res, 404, { error: 'Not found' })
 })
 
