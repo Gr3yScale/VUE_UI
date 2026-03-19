@@ -22,8 +22,6 @@ function onNavigate(page: string, id?: string): void {
   else if (page === 'get-task') { appNavigate('task-lookup') }
 }
 
-function clearTask(): void { taskId.value = '' }
-
 watch(taskId, (newId, oldId) => {
   if (newId) poll.start()
   else if (oldId) poll.pause()
@@ -31,29 +29,30 @@ watch(taskId, (newId, oldId) => {
 
 onMounted(() => {
   if (taskId.value) poll.start()
-  else void list.refresh()
+  void list.refresh()
 })
 </script>
 
 <template>
-  <div class="h-full bg-compass-bg">
-    <DashboardPage
-      v-if="!taskId"
-      :active-tasks="list.activeTasks.value"
-      :stored-tasks="list.storedTasks.value"
-      :is-loading="list.isLoading.value"
-      :error="list.error.value"
-      @navigate="onNavigate"
-    />
-    <TaskViewerPage
-      v-else
-      :task-id="taskId"
-      :entries="poll.entries.value"
-      :is-polling="poll.isPolling.value"
-      :is-stopped="poll.isStopped.value"
-      :error="poll.error.value"
-      @cancel="poll.cancel()"
-      @navigate="clearTask"
-    />
+  <div class="flex h-full flex-col overflow-hidden bg-compass-bg md:flex-row">
+    <div class="w-full flex-shrink-0 border-b border-compass-border overflow-y-auto md:w-72 md:border-b-0 md:border-r">
+      <DashboardPage
+        :active-tasks="list.activeTasks.value"
+        :stored-tasks="list.storedTasks.value"
+        :is-loading="list.isLoading.value"
+        :error="list.error.value"
+        @navigate="onNavigate"
+      />
+    </div>
+    <div class="min-h-0 flex-1 overflow-hidden border-t border-compass-border md:border-t-0">
+      <TaskViewerPage
+        :task-id="taskId"
+        :entries="poll.entries.value"
+        :is-polling="poll.isPolling.value"
+        :is-stopped="poll.isStopped.value"
+        :error="poll.error.value"
+        @cancel="poll.cancel()"
+      />
+    </div>
   </div>
 </template>

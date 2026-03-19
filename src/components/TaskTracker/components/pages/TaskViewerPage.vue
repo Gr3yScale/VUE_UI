@@ -13,7 +13,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   cancel: []
-  navigate: [page: string]
 }>()
 
 const scrollContainer = ref<HTMLElement | null>(null)
@@ -36,19 +35,19 @@ watch(
 </script>
 
 <template>
-  <div class="flex h-full flex-col gap-4 p-6">
+  <!-- No task selected -->
+  <div
+    v-if="!taskId"
+    class="flex h-full items-center justify-center"
+  >
+    <p class="text-sm text-compass-muted">Select or create a task to view its status</p>
+  </div>
+
+  <!-- Task viewer -->
+  <div v-else class="flex h-full flex-col gap-4 p-6">
     <!-- Header -->
     <div class="flex flex-shrink-0 items-start justify-between">
-      <div>
-        <button
-          data-testid="viewer-back-btn"
-          class="mb-1 text-xs text-compass-muted transition-colors hover:text-compass-accent"
-          @click="emit('navigate', 'dashboard')"
-        >
-          ← Dashboard
-        </button>
-        <h2 class="font-mono text-sm font-semibold text-compass-heading break-all">{{ taskId }}</h2>
-      </div>
+      <h2 class="font-mono text-sm font-semibold text-compass-heading break-all">{{ taskId }}</h2>
       <div class="flex items-center gap-3">
         <span v-if="isPolling" class="flex items-center gap-1.5 text-xs text-compass-muted">
           <span class="inline-block h-2 w-2 animate-pulse rounded-full bg-compass-accent" />
@@ -76,12 +75,12 @@ watch(
       {{ error }}
     </div>
 
-    <!-- Empty state -->
+    <!-- Waiting for first poll -->
     <div
-      v-if="entries.length === 0 && !isPolling && !error"
+      v-if="entries.length === 0 && !error"
       class="flex flex-1 items-center justify-center text-sm text-compass-muted"
     >
-      No poll results yet
+      Waiting for first poll…
     </div>
 
     <!-- Results list -->
