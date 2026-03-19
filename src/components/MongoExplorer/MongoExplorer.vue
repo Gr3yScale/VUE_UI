@@ -61,14 +61,16 @@ watch(
 
 // Load metadata and restore URL state on mount
 onMounted(async () => {
-  await meta.load()
-
+  // Capture URL params synchronously before any async operations; meta.load()
+  // triggers reactive watchers that call syncToUrl() and overwrite the URL.
   const params = new URLSearchParams(window.location.search)
   const urlCollection = params.get('c')
   const urlSampleId = params.get('s')
   const urlFilter = params.get('f')
   const urlSort = params.get('so')
   const urlProjection = params.get('p')
+
+  await meta.load()
 
   if (urlCollection) query.setCollection(urlCollection)
 
