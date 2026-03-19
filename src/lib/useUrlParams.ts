@@ -1,9 +1,10 @@
-import { watch, type Ref } from 'vue'
+import { onMounted, watch, type Ref } from 'vue'
 
 /**
  * Syncs a map of string refs to/from URL search params using `history.replaceState`.
- * Hydrates each ref from the current URL on call, then watches for changes and
- * writes back without triggering navigation. Empty values are removed from the URL.
+ * Hydrates each ref from the current URL on call. On mount and on any change, rewrites
+ * the URL from scratch (preserving only `view`) so stale params from other views are removed.
+ * Empty values are omitted from the URL.
  */
 export function useUrlParams(params: Record<string, Ref<string>>): void {
   const initial = new URLSearchParams(window.location.search)
@@ -13,17 +14,19 @@ export function useUrlParams(params: Record<string, Ref<string>>): void {
     if (val !== null) ref.value = val
   }
 
-  watch(
-    Object.values(params),
-    () => {
-      const current = new URLSearchParams(window.location.search)
-      for (const [key, ref] of Object.entries(params)) {
-        if (ref.value) current.set(key, ref.value)
-        else current.delete(key)
-      }
-      const qs = current.toString()
-      history.replaceState(null, '', qs ? `?${qs}` : window.location.pathname)
-    },
-    { flush: 'post' },
-  )
+  function writeToUrl(): void {
+    const fresh = new URLSearchParams()
+    const view = new URLSearchParams(window.location.search).get('view')
+    if (view) fresh.set('view', view)
+    for (const [key, ref] of Object.entries(params)) {
+      if (ref.value) fresh.set(key, ref.value)
+    }
+    const qs = fresh.toString()
+    history.replaceState(null, '', qs ? `?${qs}` : window.location.pathname)
+  }
+
+  // Clean up stale params from the previous view as soon as this component mounts
+  onMounted(writeToUrl)
+
+  watch(Object.values(params), writeToUrl, { flush: 'post' })
 }
