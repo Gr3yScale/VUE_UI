@@ -1,4 +1,5 @@
 import { computed, ref } from 'vue'
+import { useUrlParams } from '../../../lib/useUrlParams'
 import { fetchMqConfig, sendNamedMqMessage } from '../api'
 import type { UseMqNamedSendReturn } from '../types'
 
@@ -9,6 +10,8 @@ export function useMqNamedSend(): UseMqNamedSendReturn {
   const searchQuery = ref('')
   const message = ref('')
   const delimiter = ref('')
+
+  useUrlParams({ name: selectedName, msg: message, delim: delimiter })
   const response = ref<unknown>(null)
   const isLoading = ref(false)
   const sendError = ref<string | null>(null)

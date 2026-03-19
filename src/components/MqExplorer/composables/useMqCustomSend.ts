@@ -1,4 +1,5 @@
 import { computed, ref } from 'vue'
+import { useUrlParams } from '../../../lib/useUrlParams'
 import { sendCustomMqMessage } from '../api'
 import type { UseMqCustomSendReturn } from '../types'
 
@@ -11,6 +12,8 @@ export function useMqCustomSend(): UseMqCustomSendReturn {
   const queueName = ref('')
   const message = ref('')
   const delimiter = ref('')
+
+  useUrlParams({ host, port, channel, qm: queueManager, queue: queueName, msg: message, delim: delimiter })
   const response = ref<unknown>(null)
   const isLoading = ref(false)
   const sendError = ref<string | null>(null)

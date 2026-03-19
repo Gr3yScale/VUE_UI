@@ -1,9 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { registry } from './registry'
 import type { PlaygroundEntry } from './types/playground'
 
-const selected = ref<PlaygroundEntry>(registry[0]!)
+const viewId = new URLSearchParams(window.location.search).get('view')
+const initial = registry.find(e => e.id === viewId) ?? registry[0]!
+const selected = ref<PlaygroundEntry>(initial)
+
+watch(selected, entry => {
+  const params = new URLSearchParams(window.location.search)
+  params.set('view', entry.id)
+  history.replaceState(null, '', `?${params.toString()}`)
+}, { immediate: true })
 
 function select(entry: PlaygroundEntry): void {
   selected.value = entry
