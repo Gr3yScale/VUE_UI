@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, provide } from 'vue'
 import { registry } from './registry'
 import type { PlaygroundEntry } from './types/playground'
 
@@ -14,8 +14,15 @@ watch(selected, entry => {
 }, { immediate: true })
 
 function select(entry: PlaygroundEntry): void {
+  history.replaceState(null, '', `?view=${entry.id}`)
   selected.value = entry
 }
+
+/** Allows child components to navigate to another sidebar entry by ID. */
+provide('appNavigate', (viewId: string) => {
+  const entry = registry.find(e => e.id === viewId)
+  if (entry) select(entry)
+})
 </script>
 
 <template>

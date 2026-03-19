@@ -4,6 +4,7 @@ import { sampleQueries } from './data/sampleQueries.mjs'
 import { SQL_SOURCE_META } from './data/sqlSources.mjs'
 import { sqlSampleQueries } from './data/sqlSampleQueries.mjs'
 import { API_SOURCES, buildMockResponse } from './data/apiSources.mjs'
+import { tasks, createTask, getMockStatus, getChannels } from './data/taskData.mjs'
 
 const PORT = 3001
 
@@ -37,7 +38,7 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(204, {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Headers': 'Content-Type',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
     })
     res.end()
     return
@@ -217,6 +218,108 @@ const server = http.createServer(async (req, res) => {
       timestamp: new Date().toISOString(),
     })
     return
+  }
+
+  // --- Task routes ---
+  // NOTE: static paths (/task/active, /task/stored, /task/inject/channels) must be matched
+  // before the dynamic /task/:taskId wildcard.
+
+  if (req.method === 'GET' && req.url === '/task/active') {
+    const now = Date.now()
+    const activeTaskIds = [...tasks.entries()]
+      .filter(([, t]) => !t.stopped && (now - t.createdAt) < 15000)
+      .map(([id]) => id)
+    json(res, 200, { activeTaskIds, count: activeTaskIds.length, timestamp: new Date().toISOString() })
+    return
+  }
+
+  if (req.method === 'GET' && req.url === '/task/stored') {
+    const now = Date.now()
+    const storedResultIds = [...tasks.entries()]
+      .filter(([, t]) => t.stopped || (now - t.createdAt) >= 15000)
+      .map(([id]) => id)
+    json(res, 200, { storedResultIds, count: storedResultIds.length, timestamp: new Date().toISOString() })
+    return
+  }
+
+  if (req.method === 'GET' && req.url.startsWith('/task/inject/channels')) {
+    const urlObj = new URL(req.url, 'http://localhost')
+    const source = urlObj.searchParams.get('source') ?? ''
+    const env = urlObj.searchParams.get('env') ?? ''
+    const channels = getChannels(source, env)
+    json(res, 200, { source, environment: env, channels, count: channels.length })
+    return
+  }
+
+  const injectMatch = req.method === 'POST' && req.url.match(/^\/task\/inject\/([^?]+)/)
+  if (injectMatch) {
+    const source = decodeURIComponent(injectMatch[1])
+    let body
+    try { body = await readBody(req) } catch { json(res, 400, { error: 'Invalid JSON body' }); return }
+    const urlObj = new URL(req.url, 'http://localhost')
+    const retentionMs = parseInt(urlObj.searchParams.get('resultRetentionMs') ?? '600000', 10)
+    const taskId = createTask('INJECTION', { source, env: body.env, channel: body.channel })
+    json(res, 200, {
+      taskId,
+      taskType: 'INJECTION',
+      source,
+      environment: body.env,
+      channel: body.channel,
+      resultRetentionMs: retentionMs,
+      submittedAt: new Date().toISOString(),
+    })
+    return
+  }
+
+  if (req.method === 'POST' && req.url.startsWith('/task/track')) {
+    let body
+    try { body = await readBody(req) } catch { json(res, 400, { error: 'Invalid JSON body' }); return }
+    const urlObj = new URL(req.url, 'http://localhost')
+    const retentionMs = parseInt(urlObj.searchParams.get('resultRetentionMs') ?? '600000', 10)
+    const taskId = createTask('TRACKING', {
+      services: body.services,
+      messageRef: body.messageRef,
+      totalTimeoutMs: body.totalTimeoutMs,
+    })
+    json(res, 200, {
+      taskId,
+      taskType: 'TRACKING',
+      services: body.services,
+      messageRef: body.messageRef,
+      totalTimeoutMs: body.totalTimeoutMs,
+      resultRetentionMs: retentionMs,
+      submittedAt: new Date().toISOString(),
+    })
+    return
+  }
+
+  const taskIdMatch = req.url.match(/^\/task\/([^?]+)/)
+  if (taskIdMatch) {
+    const taskId = decodeURIComponent(taskIdMatch[1])
+    const task = tasks.get(taskId)
+
+    if (req.method === 'GET') {
+      if (!task) { json(res, 404, { error: `Task not found: ${taskId}` }); return }
+      json(res, 200, getMockStatus(taskId, task))
+      return
+    }
+
+    if (req.method === 'DELETE') {
+      if (!task) { json(res, 404, { error: `Task not found: ${taskId}` }); return }
+      const urlObj = new URL(req.url, 'http://localhost')
+      const reason = urlObj.searchParams.get('reason') ?? 'User requested cancellation'
+      const finalStatus = getMockStatus(taskId, task)
+      task.stopped = true
+      task.stoppedAt = new Date().toISOString()
+      json(res, 200, {
+        taskId,
+        stopped: true,
+        reason,
+        stoppedAt: task.stoppedAt,
+        finalStatus,
+      })
+      return
+    }
   }
 
   json(res, 404, { error: 'Not found' })

@@ -5,7 +5,8 @@
       "Bash(npm run:*)",
       "Bash(sort -k2)",
       "Bash(xargs ls -lh)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(lsof:*)"
     ]
   }
 }

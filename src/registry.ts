@@ -3,6 +3,12 @@ import { MongoExplorerEntry } from './components/MongoExplorer'
 import { SqlExplorerEntry } from './components/SqlExplorer'
 import { ApiExplorerEntry } from './components/ApiExplorer'
 import { MqCustomSenderEntry, MqNamedSenderEntry } from './components/MqExplorer'
+import {
+  TaskDashboardEntry,
+  TaskLookupEntry,
+  TaskCreateInjectionEntry,
+  TaskCreateTrackingEntry,
+} from './components/TaskTracker'
 
 /**
  * All registered playground components.
@@ -14,4 +20,8 @@ export const registry: PlaygroundRegistry = [
   ApiExplorerEntry,
   MqCustomSenderEntry,
   MqNamedSenderEntry,
+  TaskDashboardEntry,
+  TaskLookupEntry,
+  TaskCreateInjectionEntry,
+  TaskCreateTrackingEntry,
 ]
