@@ -89,11 +89,11 @@ onMounted(async () => {
           <span class="text-xs text-compass-muted">Source:</span>
           <DropdownPicker
             :options="meta.sources.value.map(s => s.id)"
-            :model-value="query.source.value"
+            :value="query.source.value"
             :disabled="meta.isLoading.value"
             placeholder="Select source…"
             testid="sql-source-picker"
-            @update:model-value="(v) => { query.setSource(v); selectedSampleId = null }"
+            @input="(v) => { query.setSource(v); selectedSampleId = null }"
           />
           <span v-if="meta.error.value" class="text-xs text-compass-error">{{ meta.error.value }}</span>
           <span v-if="query.rowCount.value > 0" class="text-xs text-compass-muted ml-auto">
@@ -118,10 +118,10 @@ onMounted(async () => {
           </div>
           <div class="flex-1 min-h-0">
             <SqlEditor
-              :model-value="query.sql.value"
+              :value="query.sql.value"
               :flavor="meta.flavor.value"
               :disabled="query.isLoading.value"
-              @update:model-value="(v) => { query.setSql(v); selectedSampleId = null }"
+              @input="(v) => { query.setSql(v); selectedSampleId = null }"
             />
           </div>
         </div>

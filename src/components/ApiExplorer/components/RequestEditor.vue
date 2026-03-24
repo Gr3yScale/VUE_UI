@@ -11,10 +11,10 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  'update:body': [value: string]
-  'update:contentType': [value: ContentType]
-  'update:headers': [value: HeaderEntry[]]
-  applyPreset: [preset: ApiPreset]
+  (e: 'update:body', value: string): void
+  (e: 'update:contentType', value: ContentType): void
+  (e: 'update:headers', value: HeaderEntry[]): void
+  (e: 'applyPreset', preset: ApiPreset): void
 }>()
 
 const CONTENT_TYPES: ContentType[] = ['application/json', 'application/xml', 'text/plain', 'none']
@@ -52,7 +52,7 @@ const enabledHeaderCount = () => props.headers.filter(h => h.enabled && h.key.tr
       data-testid="request-body-textarea"
       class="w-full h-40 font-mono text-sm bg-compass-elevated border border-compass-border rounded p-2 text-compass-text resize-y focus:outline-none focus:ring-1 focus:ring-compass-accent"
       placeholder="Request body…"
-      @input="emit('update:body', ($event.target as HTMLTextAreaElement).value)"
+      @input="emit('update:body', $event.target.value)"
     />
 
     <!-- Preset chips -->
@@ -107,14 +107,14 @@ const enabledHeaderCount = () => props.headers.filter(h => h.enabled && h.key.tr
             :data-testid="`header-key-input-${idx}`"
             placeholder="Key"
             class="flex-1 min-w-0 text-xs font-mono bg-compass-elevated border border-compass-border rounded px-2 py-1 text-compass-text focus:outline-none focus:ring-1 focus:ring-compass-accent"
-            @input="emit('update:headers', props.headers.map((h, i) => i === idx ? { ...h, key: ($event.target as HTMLInputElement).value } : h))"
+            @input="emit('update:headers', props.headers.map((h, i) => i === idx ? { ...h, key: $event.target.value } : h))"
           />
           <input
             :value="header.value"
             :data-testid="`header-value-input-${idx}`"
             placeholder="Value"
             class="flex-1 min-w-0 text-xs font-mono bg-compass-elevated border border-compass-border rounded px-2 py-1 text-compass-text focus:outline-none focus:ring-1 focus:ring-compass-accent"
-            @input="emit('update:headers', props.headers.map((h, i) => i === idx ? { ...h, value: ($event.target as HTMLInputElement).value } : h))"
+            @input="emit('update:headers', props.headers.map((h, i) => i === idx ? { ...h, value: $event.target.value } : h))"
           />
           <button
             :data-testid="`header-remove-btn-${idx}`"

@@ -6,7 +6,8 @@
       "Bash(sort -k2)",
       "Bash(xargs ls -lh)",
       "Bash(python3:*)",
-      "Bash(lsof:*)"
+      "Bash(lsof:*)",
+      "Bash(find /home/isc/projects/VUE_UI/src -type f \\\\\\(-name *.vue -o -name main.ts -o -name main.js \\\\\\))"
     ]
   }
 }

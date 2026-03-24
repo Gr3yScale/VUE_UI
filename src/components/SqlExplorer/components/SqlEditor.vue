@@ -6,13 +6,13 @@ import { Compartment, EditorState } from '@codemirror/state'
 import type { SqlFlavor } from '../types'
 
 const props = defineProps<{
-  modelValue: string
+  value: string
   flavor: SqlFlavor
   disabled?: boolean
 }>()
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string]
+  (e: 'input', value: string): void
 }>()
 
 const container = ref<HTMLElement | null>(null)
@@ -67,14 +67,14 @@ onMounted(() => {
 
   view = new EditorView({
     state: EditorState.create({
-      doc: props.modelValue,
+      doc: props.value,
       extensions: [
         basicSetup,
         dialectCompartment.of(sql({ dialect })),
         buildTheme(),
         EditorView.updateListener.of((update) => {
           if (update.docChanged && !isUpdatingFromParent) {
-            emit('update:modelValue', update.state.doc.toString())
+            emit('input', update.state.doc.toString())
           }
         }),
         editableCompartment.of(EditorView.editable.of(!props.disabled)),
@@ -95,7 +95,7 @@ watch(() => props.flavor, (newFlavor) => {
   view.dispatch({ effects: dialectCompartment.reconfigure(sql({ dialect })) })
 })
 
-watch(() => props.modelValue, (newVal) => {
+watch(() => props.value, (newVal) => {
   if (!view) return
   const current = view.state.doc.toString()
   if (current === newVal) return

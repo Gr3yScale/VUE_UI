@@ -10,8 +10,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  close: []
-  apply: [query: SampleQuery]
+  (e: 'close'): void
+  (e: 'apply', query: SampleQuery): void
 }>()
 
 const activeId = ref<string | null>(props.selectedId)
@@ -40,7 +40,7 @@ function jsonPreview(obj: Record<string, unknown>): string {
 </script>
 
 <template>
-  <Teleport to="body">
+  <portal to="body">
     <div
       v-if="visible"
       class="fixed inset-0 z-40 bg-black/50"
@@ -119,5 +119,5 @@ function jsonPreview(obj: Record<string, unknown>): string {
         </div>
       </div>
     </div>
-  </Teleport>
+  </portal>
 </template>

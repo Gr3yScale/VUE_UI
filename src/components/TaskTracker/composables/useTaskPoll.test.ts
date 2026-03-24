@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { ref, nextTick } from 'vue'
-import { flushPromises } from '@vue/test-utils'
+function flushPromises(): Promise<void> {
+  return Promise.resolve().then(() => Promise.resolve())
+}
 import { useTaskPoll } from './useTaskPoll'
 import * as api from '../api'
 

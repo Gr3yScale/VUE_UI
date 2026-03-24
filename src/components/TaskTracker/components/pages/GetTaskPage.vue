@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 
 const emit = defineEmits<{
-  navigate: [page: string, taskId?: string]
+  (e: 'navigate', page: string, taskId?: string): void
 }>()
 
 const taskIdInput = ref('')

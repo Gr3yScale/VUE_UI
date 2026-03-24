@@ -1,5 +1,8 @@
-import { createApp } from 'vue'
+import Vue from 'vue'
+import PortalVue from 'portal-vue'
 import App from './App.vue'
 import './assets/main.css'
 
-createApp(App).mount('#app')
+Vue.use(PortalVue)
+
+new Vue({ render: h => h(App) }).$mount('#app')

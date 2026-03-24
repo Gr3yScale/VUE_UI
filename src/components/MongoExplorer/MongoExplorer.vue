@@ -117,9 +117,9 @@ onMounted(async () => {
           <span class="text-xs text-compass-muted">Collection:</span>
           <CollectionPicker
             :collections="meta.collections.value"
-            :model-value="query.collection.value"
+            :value="query.collection.value"
             :disabled="meta.isLoading.value"
-            @update:model-value="(v) => { query.setCollection(v); selectedSampleId = null }"
+            @input="(v) => { query.setCollection(v); selectedSampleId = null }"
           />
           <span v-if="meta.error.value" class="text-xs text-red-400">{{ meta.error.value }}</span>
         </div>

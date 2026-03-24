@@ -11,18 +11,18 @@ const defaultProps = {
 
 describe('PaginationBar', () => {
   it('renders the summary text', () => {
-    const wrapper = mount(PaginationBar, { props: defaultProps })
+    const wrapper = mount(PaginationBar, { propsData: defaultProps })
     expect(wrapper.find('[data-testid="pagination-summary"]').text()).toBe(defaultProps.summary)
   })
 
   it('prev button is disabled when hasPrev is false', () => {
-    const wrapper = mount(PaginationBar, { props: defaultProps })
+    const wrapper = mount(PaginationBar, { propsData: defaultProps })
     const btn = wrapper.find('[data-testid="pagination-prev-btn"]')
     expect((btn.element as HTMLButtonElement).disabled).toBe(true)
   })
 
   it('next button is enabled when hasNext is true', () => {
-    const wrapper = mount(PaginationBar, { props: defaultProps })
+    const wrapper = mount(PaginationBar, { propsData: defaultProps })
     const btn = wrapper.find('[data-testid="pagination-next-btn"]')
     expect((btn.element as HTMLButtonElement).disabled).toBe(false)
   })
@@ -36,19 +36,19 @@ describe('PaginationBar', () => {
   })
 
   it('emits prev event on prev button click', async () => {
-    const wrapper = mount(PaginationBar, { props: { ...defaultProps, hasPrev: true } })
+    const wrapper = mount(PaginationBar, { propsData: { ...defaultProps, hasPrev: true } })
     await wrapper.find('[data-testid="pagination-prev-btn"]').trigger('click')
     expect(wrapper.emitted('prev')).toBeTruthy()
   })
 
   it('emits next event on next button click', async () => {
-    const wrapper = mount(PaginationBar, { props: defaultProps })
+    const wrapper = mount(PaginationBar, { propsData: defaultProps })
     await wrapper.find('[data-testid="pagination-next-btn"]').trigger('click')
     expect(wrapper.emitted('next')).toBeTruthy()
   })
 
   it('next button is disabled when hasNext is false', () => {
-    const wrapper = mount(PaginationBar, { props: { ...defaultProps, hasNext: false } })
+    const wrapper = mount(PaginationBar, { propsData: { ...defaultProps, hasNext: false } })
     const btn = wrapper.find('[data-testid="pagination-next-btn"]')
     expect((btn.element as HTMLButtonElement).disabled).toBe(true)
   })

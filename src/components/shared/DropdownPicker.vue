@@ -1,24 +1,24 @@
 <script setup lang="ts">
 defineProps<{
   options: string[]
-  modelValue: string
+  value: string
   disabled?: boolean
   placeholder?: string
   testid?: string
 }>()
 
 defineEmits<{
-  'update:modelValue': [value: string]
+  (e: 'input', value: string): void
 }>()
 </script>
 
 <template>
   <select
     :data-testid="testid ?? 'dropdown-picker-select'"
-    :value="modelValue"
+    :value="value"
     :disabled="disabled"
     class="text-sm rounded border border-compass-border bg-compass-elevated text-compass-text px-2 py-1 focus:outline-none focus:ring-1 focus:ring-compass-accent disabled:opacity-50"
-    @change="$emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
+    @change="$emit('input', $event.target.value)"
   >
     <option value="" disabled class="bg-compass-elevated text-compass-muted">
       {{ placeholder ?? 'Select…' }}

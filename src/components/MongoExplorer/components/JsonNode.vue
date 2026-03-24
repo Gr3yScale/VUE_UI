@@ -1,10 +1,12 @@
+<script lang="ts">
+export default { name: 'JsonNode' }
+</script>
+
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { JsonNodeValue, JsonNodeType } from '../types'
-// Recursive self-import — Vue 3 <script setup> supports this natively
+// Recursive self-import — Vue 2.7 <script setup> supports this natively
 import JsonNode from './JsonNode.vue'
-
-defineOptions({ name: 'JsonNode' })
 
 const props = withDefaults(
   defineProps<{

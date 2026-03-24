@@ -1,10 +1,10 @@
 <script setup lang="ts">
 defineProps<{
-  modelValue: string
+  value: string
 }>()
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string]
+  (e: 'input', value: string): void
 }>()
 </script>
 
@@ -19,12 +19,12 @@ const emit = defineEmits<{
     </label>
     <input
       id="endpoint-url"
-      :value="modelValue"
+      :value="value"
       type="url"
       placeholder="https://api.example.com/query"
       class="flex-1 bg-compass-elevated border border-compass-border rounded px-3 py-1.5 text-sm text-compass-text font-mono placeholder-compass-muted focus:outline-none focus:border-compass-accent transition-colors"
       data-testid="endpoint-config-url-input"
-      @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+      @input="emit('input', $event.target.value)"
     />
   </div>
 </template>

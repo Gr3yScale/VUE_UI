@@ -9,7 +9,7 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  navigate: [page: string, taskId?: string]
+  (e: 'navigate', page: string, taskId?: string): void
 }>()
 </script>
 

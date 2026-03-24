@@ -9,7 +9,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  close: []
+  (e: 'close'): void
 }>()
 
 const categories = computed(() => SQL_CHEAT_SHEET[props.flavor] ?? [])

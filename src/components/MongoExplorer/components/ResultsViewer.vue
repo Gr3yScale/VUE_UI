@@ -106,7 +106,7 @@ function copyAll(docs: MongoDocument[]): void {
 
         <!-- JSON tree -->
         <div class="p-3 overflow-x-auto">
-          <JsonNode :value="doc as JsonNodeValue" :depth="0" />
+          <JsonNode :value="doc" :depth="0" />
         </div>
       </div>
     </template>

@@ -12,7 +12,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  cancel: []
+  (e: 'cancel'): void
 }>()
 
 const scrollContainer = ref<HTMLElement | null>(null)

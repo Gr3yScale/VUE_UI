@@ -10,11 +10,11 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  'update:filter': [raw: string]
-  'update:sort': [raw: string]
-  'update:projection': [raw: string]
-  run: []
-  reset: []
+  (e: 'update:filter', raw: string): void
+  (e: 'update:sort', raw: string): void
+  (e: 'update:projection', raw: string): void
+  (e: 'run'): void
+  (e: 'reset'): void
 }>()
 </script>
 
@@ -38,7 +38,7 @@ const emit = defineEmits<{
               : 'border-compass-error focus:border-compass-error',
           ]"
           data-testid="query-editor-filter-input"
-          @input="emit('update:filter', ($event.target as HTMLTextAreaElement).value)"
+          @input="emit('update:filter', $event.target.value)"
         />
         <span
           v-if="!filter.isValid"
@@ -66,7 +66,7 @@ const emit = defineEmits<{
               : 'border-compass-error focus:border-compass-error',
           ]"
           data-testid="query-editor-sort-input"
-          @input="emit('update:sort', ($event.target as HTMLTextAreaElement).value)"
+          @input="emit('update:sort', $event.target.value)"
         />
         <span
           v-if="!sort.isValid"
@@ -94,7 +94,7 @@ const emit = defineEmits<{
               : 'border-compass-error focus:border-compass-error',
           ]"
           data-testid="query-editor-projection-input"
-          @input="emit('update:projection', ($event.target as HTMLTextAreaElement).value)"
+          @input="emit('update:projection', $event.target.value)"
         />
         <span
           v-if="!projection.isValid"

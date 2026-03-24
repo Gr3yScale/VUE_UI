@@ -62,5 +62,6 @@ provide('appNavigate', (viewId: string) => {
     <main class="flex-1 overflow-hidden" data-testid="playground-main">
       <component :is="selected.component" />
     </main>
+    <portal-target name="body" />
   </div>
 </template>

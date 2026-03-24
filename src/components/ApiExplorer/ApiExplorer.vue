@@ -101,11 +101,11 @@ onMounted(async () => {
         <span class="text-xs text-compass-muted">Source:</span>
         <DropdownPicker
           :options="meta.sources.value.map(s => s.name)"
-          :model-value="request.currentSource.value?.name ?? ''"
+          :value="request.currentSource.value?.name ?? ''"
           :disabled="meta.isLoading.value"
           placeholder="Select source…"
           testid="api-source-picker"
-          @update:model-value="onSourceChange"
+          @input="onSourceChange"
         />
         <span v-if="meta.error.value" class="text-xs text-compass-error">{{ meta.error.value }}</span>
         <span v-if="request.currentSource.value" class="text-xs text-compass-muted ml-2">

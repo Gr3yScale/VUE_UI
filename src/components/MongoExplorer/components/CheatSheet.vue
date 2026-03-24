@@ -7,7 +7,7 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  close: []
+  (e: 'close'): void
 }>()
 
 const openCategories = ref<Set<string>>(new Set(CHEAT_SHEET.map((c) => c.label)))

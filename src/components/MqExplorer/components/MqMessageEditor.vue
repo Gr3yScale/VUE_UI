@@ -8,8 +8,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  'update:message': [value: string]
-  'update:delimiter': [value: string]
+  (e: 'update:message', value: string): void
+  (e: 'update:delimiter', value: string): void
 }>()
 
 const fileInputEl = ref<HTMLInputElement | null>(null)
@@ -41,7 +41,7 @@ function onFileChange(event: Event): void {
         :disabled="props.isLoading"
         class="min-h-[10rem] resize-y rounded border border-compass-border bg-compass-elevated px-3 py-2 font-mono text-sm text-compass-text placeholder-compass-muted focus:outline-none focus:ring-1 focus:ring-compass-accent disabled:opacity-50"
         placeholder="Enter message body..."
-        @input="emit('update:message', ($event.target as HTMLTextAreaElement).value)"
+        @input="emit('update:message', $event.target.value)"
       />
     </div>
 
@@ -72,7 +72,7 @@ function onFileChange(event: Event): void {
           :disabled="props.isLoading"
           class="w-24 rounded border border-compass-border bg-compass-elevated px-2 py-1.5 font-mono text-sm text-compass-text focus:outline-none focus:ring-1 focus:ring-compass-accent disabled:opacity-50"
           placeholder="e.g. |"
-          @input="emit('update:delimiter', ($event.target as HTMLInputElement).value)"
+          @input="emit('update:delimiter', $event.target.value)"
         />
       </div>
     </div>

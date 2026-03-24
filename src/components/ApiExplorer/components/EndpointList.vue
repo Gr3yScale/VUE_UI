@@ -8,7 +8,7 @@ defineProps<{
 }>()
 
 defineEmits<{
-  select: [id: string]
+  (e: 'select', id: string): void
 }>()
 </script>
 

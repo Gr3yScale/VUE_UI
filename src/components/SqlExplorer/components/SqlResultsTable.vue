@@ -10,7 +10,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  loadMore: []
+  (e: 'loadMore'): void
 }>()
 
 const sentinel = ref<HTMLElement | null>(null)
@@ -212,7 +212,7 @@ onUnmounted(() => teardownObserver())
   </div>
 
   <!-- Cell value tooltip -->
-  <Teleport to="body">
+  <portal to="body">
     <div
       v-if="tooltip.visible"
       class="fixed z-50 max-w-md"
@@ -239,5 +239,5 @@ onUnmounted(() => teardownObserver())
         </div>
       </div>
     </div>
-  </Teleport>
+  </portal>
 </template>

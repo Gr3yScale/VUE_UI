@@ -16,12 +16,12 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  'update:source': [value: DataSource]
-  'update:env': [value: QMSEnvironment]
-  'update:channel': [value: string]
-  'update:message': [value: string]
-  submit: []
-  navigate: [page: string, taskId?: string]
+  (e: 'update:source', value: DataSource): void
+  (e: 'update:env', value: QMSEnvironment): void
+  (e: 'update:channel', value: string): void
+  (e: 'update:message', value: string): void
+  (e: 'submit'): void
+  (e: 'navigate', page: string, taskId?: string): void
 }>()
 </script>
 
@@ -44,9 +44,9 @@ const emit = defineEmits<{
         <label class="mb-1 block text-xs font-medium text-compass-muted">Source</label>
         <DropdownPicker
           :options="DATA_SOURCES"
-          :model-value="source"
+          :value="source"
           testid="create-injection-source-select"
-          @update:model-value="v => emit('update:source', v as DataSource)"
+          @input="v => emit('update:source', v)"
         />
       </div>
 
@@ -54,9 +54,9 @@ const emit = defineEmits<{
         <label class="mb-1 block text-xs font-medium text-compass-muted">Environment</label>
         <DropdownPicker
           :options="QMS_ENVIRONMENTS"
-          :model-value="env"
+          :value="env"
           testid="create-injection-env-select"
-          @update:model-value="v => emit('update:env', v as QMSEnvironment)"
+          @input="v => emit('update:env', v)"
         />
       </div>
 
@@ -64,11 +64,11 @@ const emit = defineEmits<{
         <label class="mb-1 block text-xs font-medium text-compass-muted">Channel</label>
         <DropdownPicker
           :options="channels"
-          :model-value="channel"
+          :value="channel"
           :disabled="isLoadingChannels || channels.length === 0"
           placeholder="Loading channels…"
           testid="create-injection-channel-select"
-          @update:model-value="v => emit('update:channel', v)"
+          @input="v => emit('update:channel', v)"
         />
       </div>
 
@@ -80,7 +80,7 @@ const emit = defineEmits<{
           rows="6"
           placeholder="Enter message payload…"
           class="w-full rounded border border-compass-border bg-compass-elevated px-3 py-2 font-mono text-sm text-compass-text placeholder-compass-muted focus:outline-none focus:ring-1 focus:ring-compass-accent"
-          @input="emit('update:message', ($event.target as HTMLTextAreaElement).value)"
+          @input="emit('update:message', $event.target.value)"
         />
       </div>
 

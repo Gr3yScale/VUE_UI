@@ -10,8 +10,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  close: []
-  apply: [query: SqlSampleQuery]
+  (e: 'close'): void
+  (e: 'apply', query: SqlSampleQuery): void
 }>()
 
 const activeId = ref<string | null>(props.selectedId)
@@ -36,7 +36,7 @@ function descriptionHtml(q: SqlSampleQuery): string {
 </script>
 
 <template>
-  <Teleport to="body">
+  <portal to="body">
     <div
       v-if="visible"
       class="fixed inset-0 z-40 bg-black/50"
@@ -105,5 +105,5 @@ function descriptionHtml(q: SqlSampleQuery): string {
         </div>
       </div>
     </div>
-  </Teleport>
+  </portal>
 </template>

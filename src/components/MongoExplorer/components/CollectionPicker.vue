@@ -3,22 +3,22 @@ import DropdownPicker from '@/components/shared/DropdownPicker.vue'
 
 defineProps<{
   collections: string[]
-  modelValue: string
+  value: string
   disabled?: boolean
 }>()
 
 defineEmits<{
-  'update:modelValue': [value: string]
+  (e: 'input', value: string): void
 }>()
 </script>
 
 <template>
   <DropdownPicker
     :options="collections"
-    :model-value="modelValue"
+    :value="value"
     :disabled="disabled"
     placeholder="Select collection…"
     testid="collection-picker-select"
-    @update:model-value="$emit('update:modelValue', $event)"
+    @input="$emit('input', $event)"
   />
 </template>

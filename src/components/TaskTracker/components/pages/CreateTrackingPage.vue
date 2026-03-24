@@ -9,10 +9,10 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  'update:servicesInput': [value: string]
-  'update:messageRef': [value: string]
-  'update:totalTimeoutMs': [value: string]
-  submit: []
+  (e: 'update:servicesInput', value: string): void
+  (e: 'update:messageRef', value: string): void
+  (e: 'update:totalTimeoutMs', value: string): void
+  (e: 'submit'): void
 }>()
 </script>
 
@@ -42,7 +42,7 @@ const emit = defineEmits<{
           type="text"
           placeholder="e.g. payment-svc, audit-svc"
           class="w-full rounded border border-compass-border bg-compass-elevated px-3 py-2 text-sm text-compass-text placeholder-compass-muted focus:outline-none focus:ring-1 focus:ring-compass-accent"
-          @input="emit('update:servicesInput', ($event.target as HTMLInputElement).value)"
+          @input="emit('update:servicesInput', $event.target.value)"
         />
       </div>
 
@@ -54,7 +54,7 @@ const emit = defineEmits<{
           type="text"
           placeholder="e.g. MSG-12345"
           class="w-full rounded border border-compass-border bg-compass-elevated px-3 py-2 font-mono text-sm text-compass-text placeholder-compass-muted focus:outline-none focus:ring-1 focus:ring-compass-accent"
-          @input="emit('update:messageRef', ($event.target as HTMLInputElement).value)"
+          @input="emit('update:messageRef', $event.target.value)"
         />
       </div>
 
@@ -67,7 +67,7 @@ const emit = defineEmits<{
           min="1000"
           step="1000"
           class="w-full rounded border border-compass-border bg-compass-elevated px-3 py-2 text-sm text-compass-text focus:outline-none focus:ring-1 focus:ring-compass-accent"
-          @input="emit('update:totalTimeoutMs', ($event.target as HTMLInputElement).value)"
+          @input="emit('update:totalTimeoutMs', $event.target.value)"
         />
       </div>
 

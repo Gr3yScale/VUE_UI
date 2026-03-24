@@ -7,8 +7,8 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  prev: []
-  next: []
+  (e: 'prev'): void
+  (e: 'next'): void
 }>()
 </script>
 

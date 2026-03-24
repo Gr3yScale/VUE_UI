@@ -9,7 +9,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "jsx": "preserve",
-    "jsxImportSource": "vue",
     "paths": { "@/*": ["./src/*"] },
     "types": ["vitest/globals", "node"],
     "skipLibCheck": true
